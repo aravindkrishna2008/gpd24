@@ -2,18 +2,16 @@ from ultralytics import YOLO
 import cv2
 from ultralytics.utils.plotting import Annotator  # ultralytics.yolo.utils.plotting is deprecated
 
-model = YOLO('YOLOv8n.pt')
+model = YOLO('YOLOv8nNO.pt')
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
 cap.set(4, 480)
 
 while True:
     _, img = cap.read()
-    
-    # BGR to RGB conversion is performed under the hood
-    # see: https://github.com/ultralytics/ultralytics/issues/2575
+# lower exposure of img
     try:
-        results = model.predict(img)
+        results = model.predict(img, conf=0.5)
 
         for r in results:
             
@@ -22,7 +20,7 @@ while True:
             boxes = r.boxes
             for box in boxes:
                 
-                b = box.xyxy[0]  # get box coordinates in (left, top, right, bottom) format
+                b = box.xyxy[0] 
                 c = box.cls
                 annotator.box_label(b, model.names[int(c)], color=(0, 255, 0))
             
@@ -35,3 +33,11 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
+# from ultralytics import YOLO
+
+# # Load a model
+# model = YOLO('YOLOv6nNO.pt')  # load an official model
+
+# # Predict with the model
+# results = model(0)  # predict using webcam
