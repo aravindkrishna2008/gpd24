@@ -7,9 +7,20 @@ cap = cv2.VideoCapture(0)
 cap.set(3, 640)
 cap.set(4, 480)
 
+noteWidth = 0.3556
+calibratingDistance = 1.1
+
+d = 96.4869 # pixels
+
+f = d * calibratingDistance/noteWidth
+
 while True:
+    cap.set(cv2.CAP_PROP_EXPOSURE, -1)
     _, img = cap.read()
-# lower exposure of img
+    img = img.conve
+    # lower exposure
+    
+    # img = cv2.convertScaleAbs(img, alpha=0.8, beta=0)
     try:
         results = model.predict(img, conf=0.5)
 
@@ -23,6 +34,10 @@ while True:
                 b = box.xyxy[0] 
                 c = box.cls
                 annotator.box_label(b, model.names[int(c)], color=(0, 255, 0))
+                width = box.xyxy[0][2] - box.xyxy[0][0]
+                print(width, noteWidth)
+                print( noteWidth * f / width)
+            print("__________________________")
             
         img = annotator.result()  
         cv2.imshow('YOLO V8 Detection', img)     
@@ -33,11 +48,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-# from ultralytics import YOLO
-
-# # Load a model
-# model = YOLO('YOLOv6nNO.pt')  # load an official model
-
-# # Predict with the model
-# results = model(0)  # predict using webcam
